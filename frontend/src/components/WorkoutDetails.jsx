@@ -2,14 +2,24 @@ import React from 'react';
 import { useContext } from 'react';
 import WorkoutContext from '../context/WorkoutContext';
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import AuthContext from '../context/AuthContext';
 
 function WorkoutDetails({workout}) {
 
     const {dispatch} = useContext(WorkoutContext);
+    const { user } = useContext(AuthContext);
 
     const handleClick = async () => {
+
+        if (!user) {
+            return;
+        }
+        
         const response = await fetch("http://localhost:4000/api/workouts/"+ workout._id, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${user.token}`
+            }
         });
         const json = await response.json();
 

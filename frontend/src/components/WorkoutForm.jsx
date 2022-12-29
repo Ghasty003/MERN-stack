@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { useState } from 'react'
+import AuthContext from '../context/AuthContext';
 import WorkoutContext from '../context/WorkoutContext'
 
 const WorkoutForm = () => {
@@ -11,9 +12,14 @@ const WorkoutForm = () => {
   const [reps, setReps] = useState('')
   const [error, setError] = useState(null);
   const [emptyField, setEmptyField] = useState([]);
+  const { user } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    if (!user) {
+      return;
+    }
 
     const workout = {title, load, reps};
     
@@ -21,7 +27,8 @@ const WorkoutForm = () => {
       method: 'POST',
       body: JSON.stringify(workout),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${user.token}`
       }
     })
     const json = await response.json()
